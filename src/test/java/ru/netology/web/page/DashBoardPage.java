@@ -14,28 +14,19 @@ public class DashBoardPage {
     private ElementsCollection cards = $$(".list__item");
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
-    private SelenideElement firstButton = $$("[data-test-id=action-deposit]").first();
-    private SelenideElement twoButton = $$("[data-test-id=action-deposit]").last();
-    private SelenideElement inputMoney = $("money-input__value");
-    private SelenideElement whereFrom = $("[data-test-id=from] value");
-    private SelenideElement transferButton = $("[data-test-id=action-transfer]");
 
     public DashBoardPage(){
         heading.shouldBe(visible);
     }
 
-    public DashBoardPage transferFromCard1(DataHelper.Card1 amount, DataHelper.Card1 card1) {
-        firstButton.click();
-        inputMoney.shouldBe(visible);
-        inputMoney.setValue(amount.getCard1());
-        whereFrom.setValue(card1.getCard1());
-        transferButton.click();
-        return new DashBoardPage();
+    public int getCardBalance(DataHelper.CardInfo cardInfo) {
+        var text = cards.findBy(text(cardInfo.getCardNumber().substring(12, 16))).getText();
+        return extractBalance(text);
     }
 
-    public int getCardBalance(String id) {
-        val text = cards.findBy(cssValue("data-test-id",id));
-        return extractBalance(text.text());
+    public TransferPage selectCardToTransfer(DataHelper.CardInfo cardInfo) {
+        cards.findBy(text(cardInfo.getCardNumber().substring(12, 16))).$("button").click();
+        return new TransferPage();
     }
 
     private int extractBalance(String text) {
